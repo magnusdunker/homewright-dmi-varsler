@@ -1,0 +1,8 @@
+{
+  "domain": "dmi_varsler",
+  "name": "DMI-varsler",
+  "plugin_api": 1,
+  "config_flow": true,
+  "iot_class": "cloud_polling",
+  "documentation": "https://github.com/magnusdunker/homewright-dmi-varsler"
+}
