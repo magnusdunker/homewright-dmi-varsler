@@ -1,5 +1,5 @@
-//! Plays Homewright over a pipe: answers the integration's requests the way
-//! Homewright does and records devices, entities, states, events and issues.
+//! Plays HomewrightHQ over a pipe: answers the integration's requests the way
+//! HomewrightHQ does and records devices, entities, states, events and issues.
 //! `zone.home` is at Odense.
 
 use std::collections::HashMap;
@@ -94,7 +94,7 @@ impl FakeHost {
     }
 }
 
-/// Entity ids the way Homewright builds them for a device's entities, roughly.
+/// Entity ids the way HomewrightHQ builds them for a device's entities, roughly.
 fn slug(s: &str) -> String {
     s.to_lowercase().chars().map(|c| if c.is_ascii_alphanumeric() { c } else { '_' }).collect()
 }

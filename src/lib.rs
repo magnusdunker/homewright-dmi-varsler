@@ -1,10 +1,10 @@
 //! DMI's weather warnings for a place in Denmark as an external integration
-//! for Homewright.
+//! for HomewrightHQ.
 //!
 //! The warnings come from MeteoAlarm's feed for Denmark, where DMI publishes
 //! them as CAP messages. `cap` reads the feed and works out which warnings
 //! are in force, `areas` finds DMI's warning areas for a place, and this file
-//! connects them to Homewright through the `thehome-plugin` SDK.
+//! connects them to HomewrightHQ through the `thehome-plugin` SDK.
 
 pub mod areas;
 pub mod cap;
@@ -25,7 +25,7 @@ const POLL: Duration = Duration::from_secs(600);
 /// Failed fetches in a row before the entities become unavailable.
 const FAILURES: u32 = 3;
 
-/// Logging to Homewright's log through stderr.
+/// Logging to HomewrightHQ's log through stderr.
 #[doc(hidden)]
 pub fn emit(level: &str, message: String) {
     thehome_plugin::log(level, message);

@@ -1,13 +1,13 @@
-# DMI-varsler til Homewright
+# DMI-varsler til HomewrightHQ
 
-En ekstern integration til [Homewright](https://github.com/magnusdunker/homewright), der henter DMI's vejrvarsler for et sted i Danmark: kraftig vind, regn, torden, sne og is, tåge, høje temperaturer og forhøjet vandstand. Den kræver ingen nøgle eller konto.
+En ekstern integration til [HomewrightHQ](https://github.com/magnusdunker/homewrighthq), der henter DMI's vejrvarsler for et sted i Danmark: kraftig vind, regn, torden, sne og is, tåge, høje temperaturer og forhøjet vandstand. Den kræver ingen nøgle eller konto.
 
 ## Installation
 
-I Homewright: **Indstillinger → Integrationer → Fra GitHub**. Indsæt
+I HomewrightHQ: **Indstillinger → Integrationer → Fra GitHub**. Indsæt
 
 ```
-https://github.com/magnusdunker/homewright-dmi-varsler
+https://github.com/magnusdunker/homewrighthq-dmi-varsler
 ```
 
 og tryk **Installér**. Tilføj derefter **DMI-varsler** under **Tilføj integration**.
@@ -63,12 +63,12 @@ Sådan læses feedet:
 
 ## Udvikling
 
-Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-rust](https://github.com/magnusdunker/homewright-example-integration-rust).
+Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-rust](https://github.com/magnusdunker/homewrighthq-example-integration-rust).
 
 - `src/cap.rs`: CAP-beskederne i feedet, og hvilke varsler der gælder
 - `src/areas.rs`: varslingsområderne og hvilke af dem et sted hører til
-- `src/lib.rs`: opsætningen, opdateringen og forbindelsen til Homewright
-- `tests/`: tests mod det rigtige feed i `tests/fixtures`, mod et falsk feed og med en falsk Homewright i `tests/host`
+- `src/lib.rs`: opsætningen, opdateringen og forbindelsen til HomewrightHQ
+- `tests/`: tests mod det rigtige feed i `tests/fixtures`, mod et falsk feed og med en falsk HomewrightHQ i `tests/host`
 
 ```
 cargo test
