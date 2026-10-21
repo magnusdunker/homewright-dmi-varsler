@@ -1,6 +1,6 @@
 [package]
 name = "homewright-dmi-varsler"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 description = "DMI's vejrvarsler for et sted i Danmark som ekstern integration til HomewrightHQ"
