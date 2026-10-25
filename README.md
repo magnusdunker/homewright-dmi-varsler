@@ -1,35 +1,35 @@
-# DMI-varsler til HomewrightHQ
+# DMI-varsler for HomewrightHQ
 
-En ekstern integration til [HomewrightHQ](https://github.com/magnusdunker/homewrighthq), der henter DMI's vejrvarsler for et sted i Danmark: kraftig vind, regn, torden, sne og is, tåge, høje temperaturer og forhøjet vandstand. Den kræver ingen nøgle eller konto.
+An external integration for [HomewrightHQ](https://github.com/magnusdunker/homewrighthq) that fetches DMI's weather warnings for a place in Denmark: strong wind, rain, thunder, snow and ice, fog, high temperatures and raised water levels. It needs no key or account.
 
 ## Installation
 
-I HomewrightHQ: **Indstillinger → Integrationer → Fra GitHub**. Indsæt
+In HomewrightHQ: **Settings → Integrations → From GitHub**. Paste
 
 ```
 https://github.com/magnusdunker/homewrighthq-dmi-varsler
 ```
 
-og tryk **Installér**. Tilføj derefter **DMI-varsler** under **Tilføj integration**.
+and press **Install**. Then add **DMI-varsler** under **Add integration**.
 
-Formularen er udfyldt med hjemmets position fra `zone.home`. Næste trin viser de varslingsområder, stedet hører til: det område på land, det ligger i, og de kystområder, der ligger inden for 8 km. Du kan vælge flere eller færre. Kystområderne har varsler om forhøjet vandstand, så bor du ved vandet, så tjek, at det rigtige kystområde er med. Områderne kan ændres senere under integrationens indstillinger. Vil du følge flere steder, så tilføj integrationen en gang til.
+The form is filled in with the home's position from `zone.home`. The next step shows the warning areas the place belongs to: the land area it is in, and the coastal areas within 8 km. You can select more or fewer. The coastal areas have warnings about raised water levels, so if you live by the water, check that the right coastal area is included. The areas can be changed later under the integration's options. To follow more places, add the integration again.
 
-## Hvad du får
+## What you get
 
-En enhed med to entities:
+A device with two entities:
 
-- **Varsler** (`sensor`): antallet af varsler, der gælder nu eller er varslet til senere. Attributterne er:
-  - `highest_level` og `highest_level_da`: det højeste niveau, `green`, `yellow`, `orange` eller `red` (grøn, gul, orange, rød)
-  - `in_effect`: hvor mange af varslerne, der gælder nu
-  - `warnings`: varslerne, hver med `type` (f.eks. "Forhøjet vandstand"), `type_id`, `level`, `level_da`, `headline`, `description`, `instruction`, `onset`, `ends`, `in_effect`, `areas`, `sent` og `id`
-  - `areas`: de valgte områder
-- **Varsel nu** (`binary_sensor`, device class `safety`): tændt, når et varsel gælder nu. `highest_level` og `warnings` dækker kun dem.
+- **Varsler** (warnings, `sensor`): the number of warnings that apply now or are forecast for later. The attributes are:
+  - `highest_level` and `highest_level_da`: the highest level, `green`, `yellow`, `orange` or `red` (grøn, gul, orange, rød)
+  - `in_effect`: how many of the warnings apply now
+  - `warnings`: the warnings, each with `type` (e.g. "Forhøjet vandstand"), `type_id`, `level`, `level_da`, `headline`, `description`, `instruction`, `onset`, `ends`, `in_effect`, `areas`, `sent` and `id`
+  - `areas`: the selected areas
+- **Varsel nu** (warning now, `binary_sensor`, device class `safety`): on when a warning applies now. `highest_level` and `warnings` cover only those.
 
-Varslerne hentes hvert 10. minut. Fejler det tre gange i træk, bliver begge entities utilgængelige, indtil det lykkes igen.
+The warnings are fetched every 10 minutes. If that fails three times in a row, both entities become unavailable until it succeeds again.
 
-### Hændelsen `dmi_varsler_warning`
+### The `dmi_varsler_warning` event
 
-Når et nyt varsel dukker op, eller et varsel bliver hævet til et højere niveau, sender integrationen hændelsen `dmi_varsler_warning`. `data` har `entry_id`, `kind` (`new` eller `raised`) og `warning` med de samme felter som i attributten `warnings`. Integrationen husker, hvilke varsler den har sendt, så en genstart sender dem ikke igen.
+When a new warning appears, or a warning is raised to a higher level, the integration fires the event `dmi_varsler_warning`. `data` has `entry_id`, `kind` (`new` or `raised`) and `warning` with the same fields as in the `warnings` attribute. The integration remembers which warnings it has sent, so a restart does not send them again.
 
 ```yaml
 triggers:
@@ -44,40 +44,40 @@ actions:
         {{ trigger.event.data.warning.description }}
 ```
 
-## Hvor varslerne kommer fra
+## Where the warnings come from
 
-Integrationen læser MeteoAlarms feed for Danmark, `https://feeds.meteoalarm.org/api/v1/warnings/feeds-denmark`. DMI lægger selv sine varsler dér som CAP-beskeder (Common Alerting Protocol) på dansk og engelsk, og MeteoAlarm er det europæiske netværk af vejrtjenester, som DMI er med i. Valget faldt på det feed, fordi:
+The integration reads MeteoAlarm's feed for Denmark, `https://feeds.meteoalarm.org/api/v1/warnings/feeds-denmark`. DMI itself puts its warnings there as CAP messages (Common Alerting Protocol) in Danish and English, and MeteoAlarm is the European network of weather services that DMI is part of. That feed was chosen because:
 
-- Formatet er CAP, en fast standard, og feedet er beskrevet offentligt. dmi.dk har også et JSON-endpoint til sit varselskort, men det er ikke dokumenteret, og det kan ændre sig, når hjemmesiden gør.
-- Feedet gemmer beskeder et par dage tilbage, så der findes rigtige varsler at teste mod. Testene bruger feedet fra 2026-10-18 med DMI's varsel om forhøjet vandstand ved Sydfyn og Lolland-Falster.
-- Det kræver ingen nøgle. Indholdet er under CC BY 4.0.
+- The format is CAP, a fixed standard, and the feed is publicly described. dmi.dk also has a JSON endpoint for its warning map, but it is not documented, and it can change when the website does.
+- The feed keeps messages a few days back, so there are real warnings to test against. The tests use the feed from 2026-10-18 with DMI's warning of raised water levels at Sydfyn and Lolland-Falster.
+- It needs no key. The content is under CC BY 4.0.
 
-DMI's varslingsområder er MeteoAlarms EMMA_ID-områder, 8 på land og 20 langs kysten. Deres omrids er taget fra Python-pakken [meteoalarm](https://pypi.org/project/meteoalarm/) (MIT) og ligger i `assets/areas.json`.
+DMI's warning areas are MeteoAlarm's EMMA_ID areas, 8 on land and 20 along the coast. Their outlines are taken from the Python package [meteoalarm](https://pypi.org/project/meteoalarm/) (MIT) and are in `assets/areas.json`.
 
-Sådan læses feedet:
+This is how the feed is read:
 
-- En besked, som en nyere besked henviser til (en opdatering eller en annullering), er erstattet.
-- For hver slags varsel og hvert område gælder den nyeste besked. Hver morgen sender DMI en grøn besked, "Der er ingen aktive DMI varsler/risiko", for alle områder og slags, og den afslutter det, der var før.
-- DMI sætter `expires` til det tidspunkt, beskeden blev sendt, så `expires` afslutter kun et varsel, når den ligger efter afsendelsen. `ends` gør det altid.
-- Beskeder med samme tekst for flere områder bliver ét varsel med alle områderne.
+- A message that a newer message refers to (an update or a cancellation) is replaced.
+- For each kind of warning and each area, the newest message applies. Every morning DMI sends a green message, "Der er ingen aktive DMI varsler/risiko" (there are no active DMI warnings/risk), for all areas and kinds, and it ends whatever was there before.
+- DMI sets `expires` to the time the message was sent, so `expires` only ends a warning when it is later than the sending time. `ends` always does.
+- Messages with the same text for several areas become one warning with all the areas.
 
-## Udvikling
+## Development
 
-Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-rust](https://github.com/magnusdunker/homewrighthq-example-integration-rust).
+Built in Rust on the `thehome-plugin` SDK from [homewright-example-integration-rust](https://github.com/magnusdunker/homewrighthq-example-integration-rust).
 
-- `src/cap.rs`: CAP-beskederne i feedet, og hvilke varsler der gælder
-- `src/areas.rs`: varslingsområderne og hvilke af dem et sted hører til
-- `src/lib.rs`: opsætningen, opdateringen og forbindelsen til HomewrightHQ
-- `tests/`: tests mod det rigtige feed i `tests/fixtures`, mod et falsk feed og med en falsk HomewrightHQ i `tests/host`
+- `src/cap.rs`: the CAP messages in the feed, and which warnings apply
+- `src/areas.rs`: the warning areas and which of them a place belongs to
+- `src/lib.rs`: the setup, the update and the connection to HomewrightHQ
+- `tests/`: tests against the real feed in `tests/fixtures`, against a fake feed and with a fake HomewrightHQ in `tests/host`
 
 ```
 cargo test
-cargo test -- --ignored live_feed --nocapture   # mod det rigtige feed
+cargo test -- --ignored live_feed --nocapture   # against the real feed
 cargo build --release
 ```
 
-En ny version udgives med et tag, f.eks. `git tag v0.2.0 && git push origin v0.2.0`. Workflowet bygger til Windows, Linux (x86_64 og arm64, statisk musl) og macOS og lægger binærerne på releasen.
+A new version is released with a tag, e.g. `git tag v0.2.0 && git push origin v0.2.0`. The workflow builds for Windows, Linux (x86_64 and arm64, static musl) and macOS and puts the binaries on the release.
 
-## Licens
+## License
 
-MIT. Varslerne er fra DMI via MeteoAlarm under CC BY 4.0.
+MIT. The warnings are from DMI via MeteoAlarm under CC BY 4.0.
